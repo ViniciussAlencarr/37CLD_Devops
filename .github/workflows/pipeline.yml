@@ -18,7 +18,7 @@ jobs:
 
   testeFuncionais:
     runs-on: ubuntu-latest
-    # needs: SmoketestPre
+    needs: SmoketestPre
     if: github.ref == 'ref/heads/release'
     steps:
       - uses: actions/checkout@v3
