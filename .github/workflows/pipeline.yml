@@ -4,31 +4,31 @@ on:
   push:
   workflow_dispatch:
 jobs:
-  # deploy-STG:
-  #   runs-on: ubuntu-latest
-  #   # needs: deploy-STG
-  #   if: github.ref == 'refs/heads/develop'
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Deploy 
-  #     - shell: bash
-  #       run: |
-  #          sh 'src/main/scripts/deploySTG.sh'
-           
-  # Smoketeste:
-  #   runs-on: ubuntu-latest
-  #   # needs: deploy-STG
-  #   if: github.ref == 'refs/heads/develop'
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Deploy 
-  #     - shell: bash
-  #       run: |
-  #          sh 'src/main/scripts/smoketest.sh'
-           
-  testeIntegrados:
+  deploy-STG:
     runs-on: ubuntu-latest
-    # needs: Smoketest
+    needs: deploy-STG
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy 
+      - shell: bash
+        run: |
+           sh 'src/main/scripts/deploySTG.sh'
+           
+  Smoketeste:
+    runs-on: ubuntu-latest
+    needs: deploy-STG
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy 
+      - shell: bash
+        run: |
+           sh 'src/main/scripts/smoketest.sh'
+           
+   testeIntegrados:
+    runs-on: ubuntu-latest
+    needs: Smoketest
     if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
@@ -36,6 +36,7 @@ jobs:
       - shell: bash
         run: |
            sh 'src/main/scripts/testeIntegrado.sh'
+
        
   unit-test:
     runs-on: ubuntu-latest
