@@ -16,16 +16,16 @@ jobs:
         run: |
           sh 'src/main/scripts/smoketest.sh'
   
-  # testeFuncionais:
-  #   runs-on: ubuntu-latest 
-  #   needs: SmoketestPre
-  #   if: github.ref == 'refs/heads/release'
-  #   steps: 
-  #     - uses: actions/checkout@v3
-  #     - name: Deploy
-      # shell: bash
-      # run: |
-      #   sh 'src/main/scripts/testesFuncionais.sh'
+  testeFuncionais:
+    runs-on: ubuntu-latest 
+    needs: SmoketestPre
+    if: github.ref == 'refs/heads/release'
+    steps: 
+      - uses: actions/checkout@v3
+      - name: Deploy
+      shell: bash
+      run: |
+        sh 'src/main/scripts/testesFuncionais.sh'
  
   deploy-STG:
     runs-on: ubuntu-latest
