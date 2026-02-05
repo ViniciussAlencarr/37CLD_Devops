@@ -4,50 +4,14 @@ on:
   push:
   workflow_dispatch:
 jobs:
-  deploy-STG:
-    runs-on: ubuntu-latest
-    # needs: publish
-
-    if: github.ref == 'refs/heads/develop'
-    steps:
-      - name: Deploy 
-        shell: bash
-        run: |
-          echo "Deploy STG"
-
-  Smoketest:
-    runs-on: ubuntu-latest
-    needs: deploy-STG
-
-    if: github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy 
-        shell: bash
-        run: |
-          sh 'src/main/scripts/smoketest.sh'
-
-  testeIntegrados:
-    runs-on: ubuntu-latest
-    needs: Smoketest
-    if: github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy 
-        shell: bash
-        run: |
-          sh 'src/main/scripts/testeIntegrado.sh'
-
-
-       
   unit-test:
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-
+      
     - run: mvn test  
     - name: Generate JaCoCo Badge
       id: jacoco
@@ -60,10 +24,10 @@ jobs:
       uses: actions/upload-artifact@v4.4.0
       with:
         name: jacoco-report
-        path: target/site/jacoco
-        
+        path: target/site/jacoco/
   build: 
     runs-on: ubuntu-latest
+    needs: unit-test
     steps:
     - uses: actions/checkout@v3
       with:
@@ -86,5 +50,76 @@ jobs:
     - name: Package
       run: mvn package            
           
+  deploy-STG:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: stg
     
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Deploy 
+        shell: bash
+        run: |
+          echo "Deploy STG"
+          
+  Smoketest:
+    runs-on: ubuntu-latest
+    needs: deploy-STG
     
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy 
+        shell: bash
+        run: |
+          sh 'src/main/scripts/smoketest.sh'
+          
+  testeIntegrados:
+    runs-on: ubuntu-latest
+    needs: Smoketest
+    
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy 
+        shell: bash
+        run: |
+          sh 'src/main/scripts/testeIntegrado.sh'   
+
+  deploy-Pre:
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/release'
+      environment:
+        name: pre
+      needs: build
+      steps:
+        - name: Deploy 
+          shell: bash
+          run: |
+            echo "Deploy PRE"
+    
+  SmoketestPre:
+    runs-on: ubuntu-latest
+    needs: deploy-Pre
+    
+    if: github.ref == 'refs/heads/release'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy 
+        shell: bash
+        run: |
+          sh 'src/main/scripts/smoketest.sh'          
+            
+  testeFuncionais:
+    runs-on: ubuntu-latest
+    needs: SmoketestPre
+    
+    if: github.ref == 'refs/heads/release'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy 
+        shell: bash
+        run: |
+          sh 'src/main/scripts/testesFuncionais.sh'
+
