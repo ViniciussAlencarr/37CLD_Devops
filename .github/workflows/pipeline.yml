@@ -9,7 +9,6 @@ jobs:
     # needs: deploy-STG
     if: github.ref == 'refs/heads/develop'
     steps:
-      - uses: actions/checkout@v3
       - name: Deploy 
       - shell: bash
         run: |
@@ -17,7 +16,7 @@ jobs:
            
   Smoketest:
     runs-on: ubuntu-latest
-    needs: deploy-STG
+    # needs: deploy-STG
     if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
@@ -28,7 +27,7 @@ jobs:
            
    testeIntegrados:
     runs-on: ubuntu-latest
-    needs: Smoketest
+    # needs: Smoketest
     if: github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
