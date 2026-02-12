@@ -116,8 +116,8 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_AUTOGLASS }}
       run: |
         mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-        -Dsonar.projectKey=viniciussalencarr \
-        -Dsonar.organization=Vinicius Alencar \
+        -Dsonar.projectKey=ViniciussAlencarr_37CLD_Devops \
+        -Dsonar.organization=viniciussalencarr \
         -Dsonar.host.url=https://sonarcloud.io \
         -Dsonar.qualitygate.wait=true
 
